@@ -7,9 +7,9 @@ import com.order.customer.dto.response.CustomerResponse;
 import com.order.customer.entity.Address;
 import com.order.customer.entity.Customer;
 import com.order.customer.repository.CustomerRepository;
+import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
+@Service
 public class CustomerService {
 
     private final CustomerRepository repository;
@@ -19,13 +19,10 @@ public class CustomerService {
     }
 
     public CustomerResponse createCustomer(CreateCustomerRequest request) {
-        validateRequest(request);
-        String normalizedCpf = normalizeCpf(request.cpf());
-        validateCpfLength(normalizedCpf);
-        String normalizedCep = normalizeCep(request.address().cep());
-        validateCepLength(normalizedCep);
-        String normalizedPhone = normalizePhone(request.phone());
-        validatePhoneLength(normalizedPhone);
+        validateCreateRequest(request);
+        String normalizedCpf = normalizeAndValidateCpf(request.cpf());
+        String normalizedCep = normalizeAndValidateCep(request.address().cep());
+        String normalizedPhone = normalizeAndValidatePhone(request.phone());
 
         Address address = new Address(
                 request.address().street(),
@@ -36,9 +33,7 @@ public class CustomerService {
                 normalizedCep
         );
 
-        UUID id = UUID.randomUUID();
         Customer customer = new Customer(
-                id,
                 request.name(),
                 normalizedCpf,
                 address,
@@ -47,27 +42,10 @@ public class CustomerService {
 
         Customer savedCustomer = repository.save(customer);
 
-        CustomerAddressResponse addressResponse = new CustomerAddressResponse(
-                savedCustomer.getAddress().getStreet(),
-                savedCustomer.getAddress().getNumber(),
-                savedCustomer.getAddress().getComplement(),
-                savedCustomer.getAddress().getCity(),
-                savedCustomer.getAddress().getState(),
-                savedCustomer.getAddress().getCep()
-        );
-
-        return new CustomerResponse(
-                savedCustomer.getId(),
-                savedCustomer.getName(),
-                savedCustomer.getCpf(),
-                addressResponse,
-                savedCustomer.getPhone()
-        );
+        return toResponse(savedCustomer);
     }
 
-
-
-    private void validateRequest(CreateCustomerRequest request) {
+    private void validateCreateRequest(CreateCustomerRequest request) {
         if (request == null) {
             throw new RuntimeException("Request não pode ser nulo");
         }
@@ -80,14 +58,14 @@ public class CustomerService {
             throw new RuntimeException("CPF é obrigatório");
         }
 
-        validateAddressRequest(request.address());
+        validateCreateAddressRequest(request.address());
 
         if (request.phone() == null || request.phone().isBlank()) {
             throw new RuntimeException("Telefone é obrigatório");
         }
     }
 
-    private void validateAddressRequest(CreateCustomerAddressRequest request) {
+    private void validateCreateAddressRequest(CreateCustomerAddressRequest request) {
         if (request == null) {
             throw new RuntimeException("Endereço é obrigatório");
         }
@@ -113,34 +91,57 @@ public class CustomerService {
         }
     }
 
-    private String normalizeCpf(String cpf) {
-        return cpf.replaceAll("[^0-9]", "");
-    }
+    private String normalizeAndValidateCpf(String cpf) {
+        String normalized = cpf.replaceAll("[^0-9]", "");
 
-    private String normalizeCep(String cep) {
-        return cep.replaceAll("[^0-9]", "");
-    }
-
-    private String normalizePhone(String phone) {
-        return phone.replaceAll("[^0-9]", "");
-    }
-
-    private void validateCpfLength(String cpf) {
-        if (cpf.length() != 11) {
+        if (normalized.length() != 11) {
             throw new RuntimeException("CPF deve ter 11 digitos");
         }
+
+        if (repository.existsByCpf(normalized)) {
+            throw new RuntimeException("CPF já cadastrado");
+        }
+
+        return normalized;
     }
 
-    private void validateCepLength(String cep) {
-        if (cep.length() != 8) {
+    private String normalizeAndValidateCep(String cep){
+        String normalized = cep.replaceAll("[^0-9]", "");
+
+        if (normalized.length() != 8) {
             throw new RuntimeException("CEP deve ter 8 digitos");
         }
+
+        return normalized;
     }
 
-    private void validatePhoneLength(String phone) {
-        if (phone.length() != 11) {
+    private String normalizeAndValidatePhone(String phone) {
+        String normalized = phone.replaceAll("[^0-9]", "");
+
+        if (normalized.length() != 11) {
             throw new RuntimeException("Telefone deve ter 11 digitos");
         }
+
+        return normalized;
     }
 
+    private CustomerResponse toResponse(Customer customer) {
+
+        CustomerAddressResponse addressResponse = new CustomerAddressResponse(
+                customer.getAddress().getStreet(),
+                customer.getAddress().getNumber(),
+                customer.getAddress().getComplement(),
+                customer.getAddress().getCity(),
+                customer.getAddress().getState(),
+                customer.getAddress().getCep()
+        );
+
+        return new CustomerResponse(
+                customer.getId(),
+                customer.getName(),
+                customer.getCpf(),
+                addressResponse,
+                customer.getPhone()
+        );
+    }
 }

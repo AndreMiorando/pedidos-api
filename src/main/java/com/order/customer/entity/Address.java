@@ -1,5 +1,8 @@
 package com.order.customer.entity;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class Address {
 
     private String street;

@@ -1,38 +1,38 @@
 package com.order.customer.entity;
 
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 import java.util.UUID;
 
+@Entity
 public class Customer {
 
-    private UUID id;
+    @Id
+    private String id;
     private String name;
     private String cpf;
+
+    @Embedded
     private Address address;
     private String phone;
 
     public Customer() {}
 
-    public Customer(UUID id, String name, String cpf, Address address, String phone) {
-        this.id = id;
+    public Customer(String name, String cpf, Address address, String phone) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.cpf = cpf;
         this.address = address;
         this.phone = phone;
     }
 
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -42,6 +42,14 @@ public class Customer {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public Address getAddress() {
