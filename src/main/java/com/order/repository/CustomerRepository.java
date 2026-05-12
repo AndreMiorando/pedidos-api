@@ -1,11 +1,7 @@
-package com.order.customer.repository;
+package com.order.repository;
 
-import com.order.customer.entity.Customer;
+import com.order.domain.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CustomerRepository extends JpaRepository<Customer, String> {
-
-    boolean existsByCpf(String cpf);
-
-    
 }

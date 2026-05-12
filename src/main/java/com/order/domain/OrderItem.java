@@ -1,27 +1,29 @@
-package com.order.product.entity;
+package com.order.domain;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
-public class Product {
-
-    private UUID id;
+public class OrderItem {
+    private String id;
     private String name;
     private BigDecimal price;
+    private BigDecimal totalPrice;
     private Integer quantity;
 
-    public Product(UUID id, String name, BigDecimal price, Integer quantity) {
+    public OrderItem() {}
+
+    public OrderItem(String id, String name, BigDecimal price, BigDecimal totalPrice, Integer quantity) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.totalPrice = totalPrice;
         this.quantity = quantity;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -39,6 +41,14 @@ public class Product {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public Integer getQuantity() {

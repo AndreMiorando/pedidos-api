@@ -1,26 +1,46 @@
-package com.order.customer.entity;
+package com.order.domain;
 
-import jakarta.persistence.Embeddable;
-
-@Embeddable
-public class Address {
-
+public class Customer {
+    private String id;
+    private String name;
     private String street;
     private String number;
     private String complement;
     private String city;
     private String state;
     private String cep;
+    private String phone;
+    private String cpf;
 
-    public Address() {}
+    public Customer() {}
 
-    public Address(String street, String number, String complement, String city, String state, String cep) {
-        this.street = street;
+    public Customer(String id, String name, String number, String street, String complement, String city, String state, String cep, String phone, String cpf) {
+        this.id = id;
+        this.name = name;
         this.number = number;
+        this.street = street;
         this.complement = complement;
         this.city = city;
         this.state = state;
         this.cep = cep;
+        this.phone = phone;
+        this.cpf = cpf;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getStreet() {
@@ -69,5 +89,21 @@ public class Address {
 
     public void setCep(String cep) {
         this.cep = cep;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 }
