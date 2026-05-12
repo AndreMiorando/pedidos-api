@@ -1,11 +1,19 @@
 package com.order.domain;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.List;
 
+@Entity
+@Table(name = "orders")
 public class Order {
+
+    @Id
     private String id;
+    @ManyToOne
     private Customer customer;
+    @OneToMany(cascade = CascadeType.ALL)
     private List<OrderItem> items;
     private BigDecimal totalPrice;
     private OrderStatus status;

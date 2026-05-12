@@ -6,5 +6,6 @@ import java.math.BigDecimal;
 
 public record CreateOrderResponse(String OrderId,
                                   BigDecimal totalPrice,
+                                  String customerId,
                                   OrderStatus status) {
 }
